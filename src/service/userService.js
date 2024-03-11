@@ -34,16 +34,64 @@ const hashPassword = (password) => {
 
 //end
 
+export const getListUser = async (req, res) => {
+  const connection = await connectDB();
+  let data = [];
+  try {
+    const [results] = await connection.query("SELECT * FROM users");
+    data = results;
+  } catch (err) {
+    console.log(err);
+  }
+  return data;
+};
+
 export const handleCreateUser = async (body) => {
   const connection = await connectDB();
   const { email, password, userName } = body;
   const passwordHashed = hashPassword(password);
   try {
-    const [results] = await connection.query(
+    await connection.query(
       "INSERT INTO users (email, password, userName) VALUES(?, ?, ?)",
       [email, passwordHashed, userName]
     );
-    console.log(results); // results contains rows returned by server
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const handleDeleteUser = async (id) => {
+  const connection = await connectDB();
+  try {
+    await connection.query("DELETE FROM users WHERE id = ?", [id]);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const getUserInfo = async (id) => {
+  const connection = await connectDB();
+  let userData = {};
+  try {
+    const [results] = await connection.query(
+      "SELECT * FROM users WHERE id = ?",
+      [id]
+    );
+    if (results && results.length > 0) userData = results[0];
+  } catch (err) {
+    console.log(err);
+  }
+  return userData;
+};
+
+export const handleUpdateUser = async (body) => {
+  const connection = await connectDB();
+  const { email, id, userName } = body;
+  try {
+    await connection.query(
+      "UPDATE users SET email = ?, userName = ? WHERE id = ?",
+      [email, userName, id]
+    );
   } catch (err) {
     console.log(err);
   }
