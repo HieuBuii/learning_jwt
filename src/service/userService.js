@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import mysql from "mysql2/promise";
 import dotenv from "dotenv";
+import db from "../models";
 dotenv.config();
 
 //connect to db
@@ -35,64 +36,78 @@ const hashPassword = (password) => {
 //end
 
 export const getListUser = async (req, res) => {
-  const connection = await connectDB();
+  // const connection = await connectDB();
   let data = [];
-  try {
-    const [results] = await connection.query("SELECT * FROM users");
-    data = results;
-  } catch (err) {
-    console.log(err);
-  }
+  // try {
+  //   const [results] = await connection.query("SELECT * FROM users");
+  //   data = results;
+  // } catch (err) {
+  //   console.log(err);
+  // }
+  data = await db.User.findAll();
   return data;
 };
 
 export const handleCreateUser = async (body) => {
-  const connection = await connectDB();
+  // const connection = await connectDB();
   const { email, password, userName } = body;
   const passwordHashed = hashPassword(password);
-  try {
-    await connection.query(
-      "INSERT INTO users (email, password, userName) VALUES(?, ?, ?)",
-      [email, passwordHashed, userName]
-    );
-  } catch (err) {
-    console.log(err);
-  }
+  // try {
+  //   await connection.query(
+  //     "INSERT INTO users (email, password, userName) VALUES(?, ?, ?)",
+  //     [email, passwordHashed, userName]
+  //   );
+  // } catch (err) {
+  //   console.log(err);
+  // }
+  await db.User.create({ email, password: passwordHashed, userName });
 };
 
 export const handleDeleteUser = async (id) => {
-  const connection = await connectDB();
-  try {
-    await connection.query("DELETE FROM users WHERE id = ?", [id]);
-  } catch (err) {
-    console.log(err);
-  }
+  // const connection = await connectDB();
+  // try {
+  //   await connection.query("DELETE FROM users WHERE id = ?", [id]);
+  // } catch (err) {
+  //   console.log(err);
+  // }
+  db.User.destroy({
+    where: {
+      id,
+    },
+  });
 };
 
 export const getUserInfo = async (id) => {
-  const connection = await connectDB();
-  let userData = {};
-  try {
-    const [results] = await connection.query(
-      "SELECT * FROM users WHERE id = ?",
-      [id]
-    );
-    if (results && results.length > 0) userData = results[0];
-  } catch (err) {
-    console.log(err);
-  }
+  // const connection = await connectDB();
+  // let userData = {};
+  // try {
+  //   const [results] = await connection.query(
+  //     "SELECT * FROM users WHERE id = ?",
+  //     [id]
+  //   );
+  //   if (results && results.length > 0) userData = results[0];
+  // } catch (err) {
+  //   console.log(err);
+  // }
+  let userData = db.User.findOne({ where: { id } });
   return userData;
 };
 
 export const handleUpdateUser = async (body) => {
-  const connection = await connectDB();
+  // const connection = await connectDB();
   const { email, id, userName } = body;
-  try {
-    await connection.query(
-      "UPDATE users SET email = ?, userName = ? WHERE id = ?",
-      [email, userName, id]
-    );
-  } catch (err) {
-    console.log(err);
-  }
+  // try {
+  //   await connection.query(
+  //     "UPDATE users SET email = ?, userName = ? WHERE id = ?",
+  //     [email, userName, id]
+  //   );
+  // } catch (err) {
+  //   console.log(err);
+  // }
+  db.User.update(
+    { email, userName },
+    {
+      where: { id },
+    }
+  );
 };
