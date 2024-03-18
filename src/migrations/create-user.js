@@ -22,10 +22,16 @@ module.exports = {
         type: Sequelize.STRING,
       },
       sex: {
-        type: Sequelize.BOOLEAN,
+        type: Sequelize.INTEGER,
       },
       email: {
         type: Sequelize.STRING,
+      },
+      address: {
+        type: Sequelize.STRING,
+      },
+      groupId: {
+        type: Sequelize.INTEGER,
       },
       createdAt: {
         allowNull: false,
